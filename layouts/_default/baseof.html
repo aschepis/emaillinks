@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ .Title }}</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Inter", sans-serif;
+        line-height: 1.6;
+        color: #1a202c;
+        background: linear-gradient(135deg, #002868 0%, #1a4480 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15),
+          0 0 0 1px rgba(255, 255, 255, 0.1);
+        padding: 32px;
+        width: 100%;
+        max-width: 900px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 28px;
+        color: #002868;
+        font-weight: 700;
+        font-size: 2rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #4a5568;
+        font-size: 0.9rem;
+      }
+
+      label small {
+        font-weight: 400;
+        color: #718096;
+        font-size: 0.85rem;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        background-color: #f7fafc;
+        color: #2d3748;
+      }
+
+      input[type="text"]:focus,
+      input[type="email"]:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #002868;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(0, 40, 104, 0.1);
+        transform: translateY(-1px);
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 100px;
+        font-family: inherit;
+      }
+
+      /* Primary button (Generate Link) */
+      button[type="submit"] {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 3px 12px rgba(220, 38, 38, 0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      button[type="submit"]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+      }
+
+      button[type="submit"]:active {
+        transform: translateY(0);
+      }
+
+      /* Secondary buttons (Copy Link, Generate Shortlink) */
+      #copyLinkBtn,
+      #generateShortBtn {
+        background: linear-gradient(135deg, #002868 0%, #1a4480 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 3px 12px rgba(0, 40, 104, 0.3);
+      }
+
+      #copyLinkBtn:hover,
+      #generateShortBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 16px rgba(0, 40, 104, 0.4);
+        background: linear-gradient(135deg, #1a4480 0%, #2563eb 100%);
+      }
+
+      /* Tertiary button (Copy Shortlink) */
+      #copyShortBtn {
+        background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 3px 12px rgba(237, 137, 54, 0.3);
+      }
+
+      #copyShortBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 16px rgba(237, 137, 54, 0.4);
+        background: linear-gradient(135deg, #dd6b20 0%, #c05621 100%);
+      }
+
+      button:disabled {
+        background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      .result-section {
+        margin-top: 24px;
+        padding: 20px;
+        background: linear-gradient(
+          135deg,
+          rgba(0, 40, 104, 0.05) 0%,
+          rgba(220, 38, 38, 0.05) 100%
+        );
+        border-radius: 12px;
+        display: none;
+        border: 1px solid rgba(0, 40, 104, 0.1);
+      }
+
+      .result-section.show {
+        display: block;
+        animation: slideInUp 0.3s ease-out;
+      }
+
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .result-section h3 {
+        color: #2d3748;
+        margin-bottom: 12px;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .result-section h4 {
+        color: #2d3748;
+        margin-bottom: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      .mailto-link {
+        word-break: break-all;
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        margin: 10px 0;
+        font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas,
+          "Courier New", monospace;
+        font-size: 13px;
+        color: #4a5568;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .shortlink {
+        word-break: break-all;
+        background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%);
+        padding: 12px 16px;
+        border: 2px solid #48bb78;
+        border-radius: 10px;
+        margin: 10px 0;
+        font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas,
+          "Courier New", monospace;
+        font-size: 13px;
+        color: #2f855a;
+        box-shadow: 0 3px 12px rgba(72, 187, 120, 0.1);
+      }
+
+      .success-message {
+        color: #38a169;
+        font-size: 13px;
+        font-weight: 600;
+        margin-top: 6px;
+        padding: 6px 10px;
+        background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%);
+        border-radius: 6px;
+        border-left: 3px solid #38a169;
+      }
+
+      .error-message {
+        color: #e53e3e;
+        font-size: 13px;
+        font-weight: 600;
+        margin-top: 6px;
+        padding: 6px 10px;
+        background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+        border-radius: 6px;
+        border-left: 3px solid #e53e3e;
+      }
+
+      #charCount {
+        transition: color 0.3s ease;
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .container {
+          padding: 24px 20px;
+          margin: 10px;
+        }
+
+        h1 {
+          font-size: 1.75rem;
+          margin-bottom: 24px;
+        }
+
+        button[type="submit"] {
+          width: 100%;
+          margin-bottom: 12px;
+        }
+
+        #copyLinkBtn,
+        #generateShortBtn,
+        #copyShortBtn {
+          width: calc(50% - 5px);
+          margin-right: 5px;
+        }
+
+        #copyShortBtn {
+          width: 100%;
+          margin-right: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    {{ block "main" . }}{{ end }}
+  </body>
+</html>

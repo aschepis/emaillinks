@@ -43,6 +43,50 @@
 </div>
 
 <script>
+  // Function to update URL with email data
+  function updateURLWithEmailData() {
+    const to = document.getElementById("to").value.trim();
+    const subject = document.getElementById("subject").value;
+    const body = document.getElementById("body").value;
+
+    const params = new URLSearchParams();
+    if (to) params.set("to", to);
+    if (subject) params.set("subject", subject);
+    if (body) params.set("body", body);
+
+    const newURL =
+      params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, "", newURL);
+  }
+
+  // Function to load email data from URL
+  function loadEmailDataFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const to = params.get("to");
+    const subject = params.get("subject");
+    const body = params.get("body");
+
+    if (to) document.getElementById("to").value = to;
+    if (subject) document.getElementById("subject").value = subject;
+    if (body) {
+      document.getElementById("body").value = body;
+      // Update character count
+      const charCount = document.getElementById("charCount");
+      charCount.textContent = `(${body.length}/2000 characters)`;
+      if (body.length > 1900) {
+        charCount.style.color = "#dc3545";
+      }
+    }
+  }
+
+  // Load email data from URL on page load
+  loadEmailDataFromURL();
+
+  // Add event listeners to update URL when form fields change
+  document.getElementById("to").addEventListener("input", updateURLWithEmailData);
+  document.getElementById("subject").addEventListener("input", updateURLWithEmailData);
+  document.getElementById("body").addEventListener("input", updateURLWithEmailData);
+
   document.getElementById("emailForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
